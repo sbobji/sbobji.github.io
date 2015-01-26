@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Slidify Pitch Presentation</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Slidify Pitch Presentation">
+  <meta name="author" content="Srividya Bobji">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Slidify Pitch Presentation</h1>
+    <h2>Assignment Part 2 - Tooth Growth Analysis</h2>
+    <p>Srividya Bobji<br/>Developer</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Problem Statement :</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>We are going to analyze the ToothGrowth data in the R datasets package. 
+We will load the ToothGrowth data and perform some basic exploratory data analyses 
+Provide a basic summary of the data.
+Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there&#39;s other approaches worth considering)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>R Code using ggplot :</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">library(datasets)
+library(ggplot2)
+ggplot(data=ToothGrowth, aes(x=as.factor(dose), y=len, fill=supp)) +
+    geom_bar(stat=&quot;identity&quot;,) +
+    facet_grid(. ~ supp) +
+    xlab(&quot;Dose(mg)&quot;) +
+    ylab(&quot;Tooth length&quot;) +
+    guides(fill=guide_legend(title=&quot;Supplement&quot;))
+</code></pre>
+
+<p><img src="assets/fig/ggplot2.png" alt="plot of chunk ggplot2"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Analysis:</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>As can be seen above, there is a clear positive correlation between the
+tooth length and the dose levels of Vitamin C, for both delivery methods.</p>
+
+<p>The effect of the dose can also be identified using regression analysis. One
+interesting question that can also be addressed is whether the supplement has any effect on the tooth length. In other
+words, how much of the variance in tooth length, if any, can be explained by
+the supplement?</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Conclusion :</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">fit &lt;- lm(len ~ dose + supp, data=ToothGrowth)
+summary(fit)
+</code></pre>
+
+<pre><code>## 
+## Call:
+## lm(formula = len ~ dose + supp, data = ToothGrowth)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -6.600 -3.700  0.373  2.116  8.800 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    9.273      1.282    7.23  1.3e-09 ***
+## dose           9.764      0.877   11.14  6.3e-16 ***
+## suppVC        -3.700      1.094   -3.38   0.0013 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4.24 on 57 degrees of freedom
+## Multiple R-squared:  0.704,  Adjusted R-squared:  0.693 
+## F-statistic: 67.7 on 2 and 57 DF,  p-value: 8.72e-16
+</code></pre>
+
+<p>The model explains 70% of the variance in the data.
+The intercept is 9.2725, meaning that with no supplement of Vitamin C, the average tooth length is 9.2725 units. The coefficient of <code>dose</code> is 9.7636. It can be interpreted as increasing the delievered dose 1 mg, all else equal (i.e. no change in the supplement type), would increase the tooth length 9.7636 units.The last coefficient is for the supplement type. Since the supplement type is a categorical variable, dummy variables are used. The computed coefficient is for <code>suppVC</code> and the value is -3.7 meaning that delivering a given dose as ascorbic acid, without changing the dose, would result in 3.7 units of decrease in the tooth length. Since there are only two categories, we can also conclude that on average, delivering the dosage as orange juice would increase the tooth length by 3.7 units.
+95% confidence intervals for two variables and the intercept are as follows</p>
+
+<pre><code class="r">confint(fit)
+</code></pre>
+
+<pre><code>##              2.5 % 97.5 %
+## (Intercept)  6.705  11.84
+## dose         8.008  11.52
+## suppVC      -5.890  -1.51
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>Summary:</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The confidence intervals mean that if we collect a different set of data and estimate parameters of the linear model many times, 95% of the time, the coefficient estimations will be in these ranges. For each coefficient (i.e. intercept, <code>dose</code> and <code>suppVC</code>), the null hypothesis is that the coefficients are zero, meaning that no tooth length variation is explained by that variable.
+All <em>p</em>-values are less than 0.05, rejecting the null hypothesis and suggesting that each variable explains a significant portion of variability in tooth length,assuming the significance level is 5%.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Problem Statement :'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='R Code using ggplot :'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Analysis:'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Conclusion :'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='Summary:'>
+         5
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
